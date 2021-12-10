@@ -28,52 +28,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `pokemon`.`season`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `pokemon`.`season` (
-  `season_id` INT NOT NULL AUTO_INCREMENT,
-  `season_num` INT NOT NULL,
-  PRIMARY KEY (`season_id`),
-  UNIQUE INDEX `season_id_UNIQUE` (`season_id` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `pokemon`.`episode`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `pokemon`.`episode` (
-  `episode_id` INT NOT NULL AUTO_INCREMENT,
-  `episode_num` INT NOT NULL,
-  `season_id` INT NOT NULL,
-  PRIMARY KEY (`episode_id`, `season_id`),
-  UNIQUE INDEX `episode_id_UNIQUE` (`episode_id` ASC) VISIBLE,
-  INDEX `fk_episode_season1_idx` (`season_id` ASC) VISIBLE,
-  CONSTRAINT `fk_episode_season1`
-    FOREIGN KEY (`season_id`)
-    REFERENCES `pokemon`.`season` (`season_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `pokemon`.`pokemon_tv_appearance`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `pokemon`.`pokemon_tv_appearance` (
-  `pokemon_tv_appearance_id` INT NOT NULL,
-  `episode_id` INT NOT NULL,
-  PRIMARY KEY (`pokemon_tv_appearance_id`, `episode_id`),
-  UNIQUE INDEX `idFirst Apperance on TV_UNIQUE` (`pokemon_tv_appearance_id` ASC) VISIBLE,
-  INDEX `fk_pokemon_tv_appearance_episode1_idx` (`episode_id` ASC) VISIBLE,
-  CONSTRAINT `fk_pokemon_tv_appearance_episode1`
-    FOREIGN KEY (`episode_id`)
-    REFERENCES `pokemon`.`episode` (`episode_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `pokemon`.`location`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `pokemon`.`location` (
@@ -131,6 +85,49 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `pokemon`.`season`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pokemon`.`season` (
+  `season_id` INT NOT NULL,
+  `season_num` INT NOT NULL,
+  PRIMARY KEY (`season_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pokemon`.`episode`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pokemon`.`episode` (
+  `episode_id` INT NOT NULL,
+  `episode_num` INT NOT NULL,
+  `season_id` INT NOT NULL,
+  PRIMARY KEY (`episode_id`, `season_id`),
+  INDEX `fk_episode_season1_idx` (`season_id` ASC) VISIBLE,
+  CONSTRAINT `fk_episode_season1`
+    FOREIGN KEY (`season_id`)
+    REFERENCES `pokemon`.`season` (`season_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pokemon`.`pokemon_tv_appearance`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pokemon`.`pokemon_tv_appearance` (
+  `pokemon_tv_appearance_id` INT NOT NULL,
+  `episode_id` INT NOT NULL,
+  PRIMARY KEY (`pokemon_tv_appearance_id`, `episode_id`),
+  INDEX `fk_pokemon_tv_appearance_episode1_idx` (`episode_id` ASC) VISIBLE,
+  CONSTRAINT `fk_pokemon_tv_appearance_episode1`
+    FOREIGN KEY (`episode_id`)
+    REFERENCES `pokemon`.`episode` (`episode_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `pokemon`.`pokemon`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `pokemon`.`pokemon` (
@@ -139,7 +136,6 @@ CREATE TABLE IF NOT EXISTS `pokemon`.`pokemon` (
   `generation_id` INT NOT NULL,
   `pokemon_weight` INT NOT NULL,
   `pokemon_height` INT NOT NULL,
-  `pokemon_tv_appearance_id` INT NOT NULL,
   `location_id` INT NOT NULL,
   `rarity_id` INT NOT NULL,
   `ability1_id` INT NOT NULL,
@@ -147,11 +143,11 @@ CREATE TABLE IF NOT EXISTS `pokemon`.`pokemon` (
   `type1_id` INT NOT NULL,
   `type2_id` INT NOT NULL,
   `color_id` INT NOT NULL,
+  `pokemon_tv_appearance_id` INT NOT NULL,
   PRIMARY KEY (`pokemon_id`, `pokemon_name`, `location_id`, `rarity_id`, `ability1_id`, `type1_id`, `type2_id`),
   UNIQUE INDEX `idPokemon ID_UNIQUE` (`pokemon_id` ASC) VISIBLE,
   UNIQUE INDEX `Pokemon name_UNIQUE` (`pokemon_name` ASC) VISIBLE,
   INDEX `fk_Pokemon_Generation_idx` (`generation_id` ASC) VISIBLE,
-  INDEX `fk_Pokemon_First Apperance on TV1_idx` (`pokemon_tv_appearance_id` ASC) VISIBLE,
   INDEX `fk_pokemon_Location1_idx` (`location_id` ASC) VISIBLE,
   INDEX `fk_pokemon_Rarity1_idx` (`rarity_id` ASC) VISIBLE,
   INDEX `fk_pokemon_ability1_idx` (`ability1_id` ASC) VISIBLE,
@@ -159,14 +155,10 @@ CREATE TABLE IF NOT EXISTS `pokemon`.`pokemon` (
   INDEX `fk_pokemon_type1_idx` (`type1_id` ASC) VISIBLE,
   INDEX `fk_pokemon_type2_idx` (`type2_id` ASC) VISIBLE,
   INDEX `fk_pokemon_color1_idx` (`color_id` ASC) VISIBLE,
+  INDEX `fk_pokemon_pokemon_tv_appearance1_idx` (`pokemon_tv_appearance_id` ASC) VISIBLE,
   CONSTRAINT `fk_Pokemon_Generation`
     FOREIGN KEY (`generation_id`)
     REFERENCES `pokemon`.`generation` (`generation_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Pokemon_First Apperance on TV1`
-    FOREIGN KEY (`pokemon_tv_appearance_id`)
-    REFERENCES `pokemon`.`pokemon_tv_appearance` (`pokemon_tv_appearance_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_pokemon_Location1`
@@ -202,6 +194,11 @@ CREATE TABLE IF NOT EXISTS `pokemon`.`pokemon` (
   CONSTRAINT `fk_pokemon_color1`
     FOREIGN KEY (`color_id`)
     REFERENCES `pokemon`.`color` (`color_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_pokemon_pokemon_tv_appearance1`
+    FOREIGN KEY (`pokemon_tv_appearance_id`)
+    REFERENCES `pokemon`.`pokemon_tv_appearance` (`pokemon_tv_appearance_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
